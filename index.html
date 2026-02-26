@@ -1,259 +1,237 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="description"
-        content="BOW-CONNECT: Bag-of-Words based Connectivity for Efficient Robotic Exploration and Mapping">
-  <meta name="keywords" content="BOW-CONNECT, Robot Exploration, SLAM, Bag-of-Words, Loop Closure">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>\Large \textbf{BOWConnect}: Parallel Bayesian Optimization over Windows with Learned Local Cost Maps for Sample-Efficient Kinodynamic Motion Planning</title>
-
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-
-    gtag('js', new Date());
-
-    gtag('config', 'G-PYVRSFMDRL');
-  </script>
-
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
-        rel="stylesheet">
-
-  <link rel="stylesheet" href="./static/css/bulma.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
-  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-  <link rel="stylesheet" href="./static/css/index.css">
-  <link rel="icon" href="./static/images/favicon.svg">
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script defer src="./static/js/fontawesome.all.min.js"></script>
-  <script src="./static/js/bulma-carousel.min.js"></script>
-  <script src="./static/js/bulma-slider.min.js"></script>
-  <script src="./static/js/index.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOWConnect — Kinodynamic Motion Planning</title>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <style>
+    :root{--bg:#fafaf8;--bg-alt:#f3f2ef;--bg-card:#fff;--text:#1a1a1a;--text-sec:#555;--text-mut:#888;--border:#e0ddd8;--border-lt:#eceae6;--accent:#2563eb;--accent-light:#eff4ff;--accent-border:#c7d7fe;--serif:'Newsreader',Georgia,serif;--sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',monospace}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:.85rem 2rem;background:rgba(250,250,248,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border-lt)}.nav-inner{max-width:1000px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}.logo{font-family:var(--serif);font-size:1.15rem;font-weight:600}.logo span{color:var(--accent)}.nav-links{display:flex;gap:1.8rem}.nav-links a{color:var(--text-mut);text-decoration:none;font-size:.8rem;font-weight:500;letter-spacing:.02em;transition:color .2s}.nav-links a:hover{color:var(--accent)}
+    .hero{max-width:780px;margin:0 auto;padding:9rem 2rem 4rem;text-align:center}.badge{display:inline-block;padding:.3rem .9rem;border:1px solid var(--accent-border);border-radius:100px;font-size:.72rem;font-weight:600;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2rem;background:var(--accent-light);animation:fadeIn .6s ease both}.hero h1{font-family:var(--serif);font-size:clamp(1.9rem,4vw,2.8rem);line-height:1.25;font-weight:500;margin-bottom:1.5rem;letter-spacing:-.02em;animation:fadeIn .6s ease .1s both}.hero-sub{font-size:1.02rem;color:var(--text-sec);max-width:620px;margin:0 auto 2rem;line-height:1.75;animation:fadeIn .6s ease .2s both}.authors{display:flex;justify-content:center;gap:1.2rem;flex-wrap:wrap;margin-bottom:.5rem;animation:fadeIn .6s ease .25s both}.author{font-size:.95rem;font-weight:500}.author sup{color:var(--accent);font-size:.65em}.affiliation{font-size:.85rem;color:var(--text-mut);margin-bottom:2.2rem;animation:fadeIn .6s ease .3s both}.buttons{display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;animation:fadeIn .6s ease .35s both}.btn{display:inline-flex;align-items:center;gap:.45rem;padding:.55rem 1.2rem;border-radius:6px;font-size:.85rem;font-weight:500;text-decoration:none;transition:all .2s;font-family:var(--sans);cursor:pointer;border:1px solid var(--border);background:var(--bg-card);color:var(--text)}.btn:hover{border-color:var(--accent-border);color:var(--accent)}.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}.btn-primary:hover{background:#1d4ed8}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    section{padding:4rem 2rem}.inner{max-width:780px;margin:0 auto}.inner-w{max-width:1020px;margin:0 auto}.sec-label{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem}.sec-title{font-family:var(--serif);font-size:clamp(1.5rem,2.5vw,2rem);font-weight:500;margin-bottom:1.2rem;letter-spacing:-.015em;line-height:1.25}.divider{height:1px;background:var(--border-lt);max-width:200px;margin:0 auto}
+    .abstract-text{font-family:var(--serif);font-size:1.05rem;color:var(--text-sec);line-height:1.85}.abstract-text p{margin-bottom:1rem}.abstract-text strong{color:var(--text);font-weight:500}
+    .contrib-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:1.5rem}.contrib-item{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:1.5rem;transition:all .2s}.contrib-item:hover{border-color:var(--accent-border);box-shadow:0 4px 16px rgba(37,99,235,.06)}.contrib-item h3{font-size:.9rem;font-weight:600;margin-bottom:.4rem}.contrib-item p{font-size:.85rem;color:var(--text-sec);line-height:1.65}.contrib-num{font-family:var(--serif);font-size:1.5rem;color:var(--accent);opacity:.35;font-weight:400;line-height:1;margin-bottom:.6rem}
+    .method-text p{font-size:.95rem;color:var(--text-sec);line-height:1.8;margin-bottom:1rem}
+    .arch-box{margin:2rem 0;padding:2rem;background:var(--bg-card);border:1px solid var(--border);border-radius:12px}.arch-flow{display:flex;align-items:center;justify-content:center;gap:.6rem;flex-wrap:wrap}.arch-node{border:1px solid var(--border);border-radius:8px;padding:.75rem 1.1rem;text-align:center;background:var(--bg);min-width:105px;transition:all .2s}.arch-node:hover{border-color:var(--accent-border)}.arch-node .n-title{font-size:.76rem;font-weight:600}.arch-node .n-sub{font-size:.66rem;color:var(--text-mut)}.arch-node.core{border-color:var(--accent-border);background:var(--accent-light)}.arch-arr{color:var(--text-mut);font-size:.85rem}.arch-vert{display:flex;flex-direction:column;align-items:center;gap:.5rem;margin-top:1rem}
+    .eq-box{background:var(--bg-alt);border:1px solid var(--border-lt);border-radius:8px;padding:1rem 1.5rem;margin:1rem 0;font-family:var(--mono);font-size:.85rem;text-align:center;position:relative}.eq-box .eq-num{position:absolute;right:1rem;top:50%;transform:translateY(-50%);color:var(--text-mut);font-size:.75rem}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:2rem 0}.stat{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:1.4rem 1rem;text-align:center;transition:all .2s}.stat:hover{border-color:var(--accent-border)}.stat-val{font-family:var(--serif);font-size:2rem;font-weight:500;line-height:1.1;margin-bottom:.2rem;color:var(--accent)}.stat-label{font-size:.75rem;color:var(--text-mut)}
+    /* Figures */
+    .fig-wrap{margin:2rem 0;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--bg-card)}.fig-wrap img{width:100%;display:block}.fig-caption{padding:1rem 1.5rem;font-size:.85rem;color:var(--text-sec);border-top:1px solid var(--border-lt);line-height:1.6}.fig-caption strong{color:var(--text)}
+    /* Tabs */
+    .tabs{display:flex;gap:0;margin-bottom:-1px;position:relative;z-index:1}.tab-btn{padding:.5rem 1.3rem;border:1px solid var(--border);border-radius:8px 8px 0 0;background:var(--bg-alt);color:var(--text-mut);font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--sans);transition:all .2s}.tab-btn.active{background:var(--bg-card);color:var(--accent);border-bottom-color:var(--bg-card)}.tab-content{display:none}.tab-content.active{display:block}
+    /* Videos */
+    .vid-section{background:var(--bg-alt)}.vid-stack{display:flex;flex-direction:column;gap:2rem;margin-top:2rem}.vid-card{border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--bg-card);transition:box-shadow .3s}.vid-card:hover{box-shadow:0 8px 30px rgba(0,0,0,.07)}.vid-player{width:100%;aspect-ratio:16/9;background:#000;display:block}.vid-player video{width:100%;height:100%;display:block}.vid-info{padding:1.2rem 1.5rem;display:flex;justify-content:space-between;align-items:center}.vid-info h3{font-size:1rem;font-weight:600}.vid-info p{font-size:.85rem;color:var(--text-mut)}.vid-tag{display:inline-block;padding:.2rem .6rem;border-radius:5px;font-size:.7rem;font-weight:600;letter-spacing:.04em}.vid-tag-ugv{background:#dbeafe;color:#1e40af}.vid-tag-uav{background:#fef3c7;color:#92400e}
+    /* Experiments */
+    .exp-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2rem}.exp-card{border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--bg-card);transition:all .2s}.exp-card:hover{border-color:var(--accent-border);box-shadow:0 4px 16px rgba(37,99,235,.06)}.exp-card img{width:100%;display:block}.exp-info{padding:1rem 1.2rem}.exp-tag{display:inline-block;padding:.15rem .5rem;border-radius:4px;font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem}.exp-tag-ugv{background:#dbeafe;color:#1e40af}.exp-tag-uav{background:#fef3c7;color:#92400e}.exp-info h3{font-size:.88rem;font-weight:600;margin-bottom:.3rem}.exp-info p{font-size:.82rem;color:var(--text-sec);line-height:1.6}
+    /* Bibtex */
+    .bib-block{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--bg-card)}.bib-head{padding:.7rem 1.2rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border-lt)}.bib-head span{font-family:var(--mono);font-size:.75rem;color:var(--text-mut)}.copy-btn{padding:.3rem .7rem;border:1px solid var(--border);background:var(--bg);color:var(--text-sec);border-radius:5px;font-size:.72rem;cursor:pointer;font-family:var(--sans);font-weight:500;display:flex;align-items:center;gap:.3rem;transition:all .2s}.copy-btn:hover{border-color:var(--accent);color:var(--accent)}.bib-code{padding:1.2rem;font-family:var(--mono);font-size:.78rem;line-height:1.75;color:var(--text-sec);white-space:pre;overflow-x:auto}
+    footer{padding:3rem 2rem;text-align:center;border-top:1px solid var(--border-lt)}footer p{font-size:.8rem;color:var(--text-mut);line-height:1.7}footer a{color:var(--accent);text-decoration:none}footer a:hover{text-decoration:underline}
+    .fade-in{opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s ease}.fade-in.visible{opacity:1;transform:translateY(0)}
+    @media(max-width:768px){.nav-links{gap:1rem}.nav-links a{font-size:.7rem}.contrib-grid,.exp-grid{grid-template-columns:1fr}.stats-row{grid-template-columns:repeat(2,1fr)}.arch-flow{flex-direction:column}.arch-arr{transform:rotate(90deg)}}
+  </style>
 </head>
 <body>
+<nav><div class="nav-inner"><div class="logo">BOW<span>Connect</span></div><div class="nav-links"><a href="#abstract">Abstract</a><a href="#method">Method</a><a href="#results">Results</a><a href="#videos">Videos</a><a href="#experiments">Experiments</a><a href="#bibtex">Cite</a></div></div></nav>
 
-<nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
+<div class="hero">
+  <div class="badge">IROS 2025</div>
+  <h1>BOWConnect: Parallel Bayesian Optimization over Windows with Learned Local Cost Maps for Sample-Efficient Kinodynamic Motion Planning</h1>
+  <p class="hero-sub">A bidirectional parallel kinodynamic planner achieving 100% success rate with real-time computation across ten benchmark environments, validated on ground and aerial vehicles.</p>
+  <div class="authors"><span class="author">Author Name<sup>1</sup></span><span class="author">Author Name<sup>1</sup></span><span class="author">Author Name<sup>1</sup></span></div>
+  <p class="affiliation"><sup>1</sup> Your Institution</p>
+  <div class="buttons"><a href="#" class="btn btn-primary"><i class="fas fa-file-pdf"></i> Paper</a><a href="#" class="btn"><i class="ai ai-arxiv"></i> arXiv</a><a href="#videos" class="btn"><i class="fas fa-play"></i> Video</a><a href="#" class="btn"><i class="fab fa-github"></i> Code</a></div>
+</div><div class="divider"></div>
+
+<!-- ABSTRACT -->
+<section id="abstract"><div class="inner fade-in">
+  <div class="sec-label">Overview</div><h2 class="sec-title">Abstract</h2>
+  <div class="abstract-text">
+    <p>This paper presents <strong>BOWConnect</strong>, a bidirectional parallel kinodynamic motion planner that addresses three fundamental limitations of existing sampling-based methods: sample inefficiency in high-dimensional state spaces, unreliable cost heuristics under dynamic constraints, and poor performance in narrow passage environments.</p>
+    <p>Unlike classical planners that rely on random control sampling and geometric distance heuristics, BOWConnect integrates <strong>Bayesian Optimization over Windows (BOW)</strong> as a learning-based steering function within a parallel tree-based exploration framework, enabling each worker to learn local cost maps and constraints to guide sampling toward dynamically feasible and collision-free controls.</p>
+    <p>A bidirectional architecture simultaneously grows forward and backward trees from the start and goal regions in parallel threads, with a <strong>spatial hashing mechanism</strong> enabling fast connection queries and a boundary value problem solver generating kinodynamically consistent bridge trajectories.</p>
+    <p>Extensive evaluations across <strong>ten benchmark environments</strong> demonstrate that BOWConnect achieves 100% success while achieving the fastest or near-fastest planning time, including narrow passages and non-convex spaces where state-of-the-art planners fail, with real-world deployment on a ground vehicle and a quadrotor confirming real-time planning with no collisions.</p>
   </div>
-  <div class="navbar-menu">
-    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-      <!-- Add your navigation items here -->
+</div></section><div class="divider"></div>
+
+<!-- CONTRIBUTIONS -->
+<section id="contributions"><div class="inner fade-in">
+  <div class="sec-label">Highlights</div><h2 class="sec-title">Key Contributions</h2>
+  <div class="contrib-grid">
+    <div class="contrib-item"><div class="contrib-num">01</div><h3>Online Learning-Based Steering</h3><p>Generates collision-free, kinodynamically feasible trajectories directly in continuous state and control spaces using GP-guided Bayesian Optimization.</p></div>
+    <div class="contrib-item"><div class="contrib-num">02</div><h3>Bidirectional Parallel Architecture</h3><p>Simultaneously grows forward and backward trees from start and goal in parallel threads, enhancing global connectivity.</p></div>
+    <div class="contrib-item"><div class="contrib-num">03</div><h3>Spatial Hashing Mechanism</h3><p>O(1) lookup within the MotionTree data structure for efficient multi-stage feasibility verification and fast connection queries.</p></div>
+    <div class="contrib-item"><div class="contrib-num">04</div><h3>Real-World Validation</h3><p>Validated on ground vehicles (unicycle &amp; bicycle) and quadrotors with planning under 0.15s and zero collisions.</p></div>
+  </div>
+</div></section><div class="divider"></div>
+
+<!-- METHOD -->
+<section id="method"><div class="inner fade-in">
+  <div class="sec-label">Approach</div><h2 class="sec-title">Method Overview</h2>
+  <div class="method-text">
+    <p>BOWConnect spawns N/2 forward workers and N/2 backward workers, each maintaining its own search tree and BOW instance. Each worker grows its MotionTree using constrained Bayesian Optimization &mdash; sampling controls, simulating dynamics via 4th-order Runge-Kutta, and learning separate GP models for reward and constraint.</p>
+    <p>When a potential connection between trees is detected via spatial hashing, multi-stage verification checks kinematic feasibility before solving a boundary value problem to generate the connecting trajectory.</p>
+  </div>
+
+  <!-- TODO: Replace src with your Fig 1 path -->
+  <div class="fig-wrap fade-in">
+    <img src="./static/images/fig1_tree_growth.png" alt="Parallel motion tree growth of BOWConnect">
+    <div class="fig-caption"><strong>Figure 1.</strong> Parallel motion tree growth in a cluttered planar environment. Trees grow from start (green) and goal (red) regions. Grey trajectories show sampled short-horizon paths; bold blue curve is the final connected path. Cyan highlights the BVP connection.</div>
+  </div>
+
+  <div class="arch-box fade-in">
+    <div style="text-align:center;margin-bottom:1rem"><span class="sec-label" style="display:flex;justify-content:center">System Architecture</span></div>
+    <div class="arch-flow">
+      <div class="arch-node"><div class="n-title">Start Region</div><div class="n-sub">Sample states S</div></div><div class="arch-arr">&rarr;</div>
+      <div class="arch-node core"><div class="n-title">Forward Workers</div><div class="n-sub">BOW + MotionTree</div></div><div class="arch-arr">&hArr;</div>
+      <div class="arch-node core"><div class="n-title">Spatial Hash</div><div class="n-sub">Connection detection</div></div><div class="arch-arr">&hArr;</div>
+      <div class="arch-node core"><div class="n-title">Backward Workers</div><div class="n-sub">BOW + MotionTree</div></div><div class="arch-arr">&rarr;</div>
+      <div class="arch-node"><div class="n-title">Goal Region</div><div class="n-sub">Sample states G</div></div>
+    </div>
+    <div class="arch-vert"><div class="arch-arr">&darr;</div><div class="arch-node" style="display:inline-block"><div class="n-title">BVP Solver</div><div class="n-sub">Bridge trajectory</div></div><div class="arch-arr">&darr;</div><div class="arch-node core" style="display:inline-block"><div class="n-title">Merged Trajectory</div><div class="n-sub">Feasible path</div></div></div>
+  </div>
+
+  <h3 style="font-size:.95rem;margin:2rem 0 .8rem;font-weight:600">Key Formulations</h3>
+  <div class="eq-box fade-in">r(<b>u</b>) = &minus;&Vert;<b>p</b>(T) &minus; <b>p</b><sub>target</sub>&Vert; if collision-free, &minus;&infin; otherwise<span class="eq-num">(6)</span></div>
+  <div class="eq-box fade-in">c(<b>u</b>) = 1 &minus; &#x1D540;<sub>collision</sub>(&tau;(<b>u</b>))<span class="eq-num">(7)</span></div>
+  <div class="eq-box fade-in">&alpha;(<b>u</b>) = [&mu;<sub>r</sub>(<b>u</b>) &minus; &kappa;&sigma;<sub>r</sub>(<b>u</b>)] &times; P<sub>feas</sub>(<b>u</b>)<span class="eq-num">(8)</span></div>
+</div></section><div class="divider"></div>
+
+<!-- RESULTS -->
+<section id="results"><div class="inner-w fade-in" style="padding:0 2rem">
+  <div class="sec-label">Evaluation</div><h2 class="sec-title">Benchmark Results</h2>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-val">100%</div><div class="stat-label">Success rate</div></div>
+    <div class="stat"><div class="stat-val">10</div><div class="stat-label">Environments</div></div>
+    <div class="stat"><div class="stat-val">&lt;0.15s</div><div class="stat-label">Planning time</div></div>
+    <div class="stat"><div class="stat-val">0</div><div class="stat-label">Real-world collisions</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('ugv')">UGV Benchmarks</button>
+    <button class="tab-btn" onclick="switchTab('uav')">UAV Benchmarks</button>
+  </div>
+
+  <!-- TODO: Replace src with your Table I and Table II image paths -->
+  <div class="tab-content active" id="tab-ugv">
+    <div class="fig-wrap" style="border-radius:0 12px 12px 12px">
+      <img src="./static/images/table1_ugv.png" alt="Table I: UGV Benchmark Results">
+      <div class="fig-caption"><strong>Table I.</strong> Comparison of kinodynamic motion planning methods across six UGV environments. Best results highlighted in bold. A dash (&mdash;) denotes planner failure.</div>
     </div>
   </div>
-</nav>
+  <div class="tab-content" id="tab-uav">
+    <div class="fig-wrap" style="border-radius:0 12px 12px 12px">
+      <img src="./static/images/table2_uav.png" alt="Table II: UAV Benchmark Results">
+      <div class="fig-caption"><strong>Table II.</strong> Comparison across four quadrotor environments. All planners evaluated using a quadrotor dynamic model.</div>
+    </div>
+  </div>
+</div></section><div class="divider"></div>
 
+<!-- VIDEOS -->
+<section id="videos" class="vid-section"><div class="inner-w fade-in" style="padding:0 2rem">
+  <div class="sec-label">Demonstrations</div><h2 class="sec-title">Videos</h2>
+  <div class="vid-stack">
 
-<section class="hero">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered">
-        <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title">\Large \textbf{BOWConnect}: Parallel Bayesian Optimization over Windows with Learned Local Cost Maps for Sample-Efficient Kinodynamic Motion Planning</h1>
-          <div class="is-size-5 publication-authors">
-            <span class="author-block">
-              Author Name<sup>1</sup>,</span>
-            <span class="author-block">
-              Author Name<sup>1</sup>,</span>
-            <span class="author-block">
-              Author Name<sup>1</sup>
-            </span>
-          </div>
-
-          <div class="is-size-5 publication-authors">
-            <span class="author-block"><sup>1</sup>Your Institution</span>
-          </div>
-
-          <div class="column has-text-centered">
-            <div class="publication-links">
-              <!-- PDF Link. -->
-              <span class="link-block">
-                <a href="./static/paper/IROS_BOW_CONNECT (5).pdf"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Paper</span>
-                </a>
-              </span>
-              <span class="link-block">
-                <a href="#"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
-              <!-- Video Link. -->
-              <span class="link-block">
-                <a href="#"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-youtube"></i>
-                  </span>
-                  <span>Video</span>
-                </a>
-              </span>
-              <!-- Code Link. -->
-              <span class="link-block">
-                <a href="#"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  <span>Code</span>
-                  </a>
-              </span>
-            </div>
-
-          </div>
-        </div>
+    <!-- TODO: Replace src with your UGV video path -->
+    <div class="vid-card">
+      <div class="vid-player">
+        <video controls poster="./static/images/ugv_poster.png">
+          <source src="./static/videos/Bowconnect Ugv.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
+      <div class="vid-info"><div><h3>UGV Exploration</h3><p>Ground vehicle navigating cluttered indoor environments</p></div><span class="vid-tag vid-tag-ugv">Ground Vehicle</span></div>
     </div>
-  </div>
-</section>
 
-<section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <!-- Add your teaser image or video here -->
-      <h2 class="subtitle has-text-centered">
-        <span class="dnerf">BOW-CONNECT</span> enables efficient robotic exploration and mapping using bag-of-words based connectivity detection.
-      </h2>
-    </div>
-  </div>
-</section>
-
-
-<!-- Add your image carousel or video demonstrations here if needed -->
-
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <!-- Abstract. -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <p>
-            This paper presents BOW-CONNECT, a novel approach for efficient robotic exploration and mapping using bag-of-words based connectivity detection. Our method leverages visual bag-of-words representations to identify potential loop closures and connectivity between different regions of the environment.
-          </p>
-          <p>
-            The proposed system integrates bag-of-words features with robot exploration strategies to improve mapping efficiency and accuracy. By detecting connectivity patterns in real-time, our approach enables robots to make informed decisions about exploration paths and optimize the mapping process.
-          </p>
-          <p>
-            We demonstrate the effectiveness of <span class="dnerf">BOW-CONNECT</span> through extensive experiments in various environments. Our results show significant improvements in exploration efficiency, map quality, and computational performance compared to baseline methods. The system is capable of handling large-scale environments while maintaining real-time performance.
-          </p>
-        </div>
+    <!-- TODO: Replace src with your UAV video path -->
+    <div class="vid-card">
+      <div class="vid-player">
+        <video controls poster="./static/images/uav_poster.png">
+          <source src="./static/videos/Bowconnect Uav Final W Text.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
+      <div class="vid-info"><div><h3>UAV Exploration</h3><p>Quadrotor navigating 3D environments with real-time obstacle avoidance</p></div><span class="vid-tag vid-tag-uav">Aerial Vehicle</span></div>
     </div>
-    <!--/ Abstract. -->
-
-    <!-- Paper video. -->
-    <!-- Uncomment when video is available
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Video</h2>
-        <div class="publication-video">
-          <iframe src="YOUR_VIDEO_URL"
-                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-        </div>
-      </div>
-    </div>
-    -->
-    <!--/ Paper video. -->
-  </div>
-</section>
-
-
-<section class="section">
-  <div class="container is-max-desktop">
-
-    <!-- Method Overview -->
-    <div class="columns is-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Method Overview</h2>
-        <div class="content has-text-justified">
-          <p>
-            BOW-CONNECT uses a bag-of-words representation to efficiently detect connectivity patterns during robotic exploration. Add your method diagrams and figures here.
-          </p>
-        </div>
-      </div>
-    </div>
-    <!--/ Method Overview. -->
-
-    <!-- Results -->
-    <div class="columns is-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Results</h2>
-        <div class="content has-text-justified">
-          <p>
-            Our experiments demonstrate the effectiveness of BOW-CONNECT in various environments. Add your experimental results, figures, and comparisons here.
-          </p>
-        </div>
-      </div>
-    </div>
-    <!--/ Results. -->
 
   </div>
-</section>
+</div></section><div class="divider"></div>
 
+<!-- EXPERIMENTS -->
+<section id="experiments"><div class="inner fade-in">
+  <div class="sec-label">Real-World</div><h2 class="sec-title">Physical Experiments</h2>
+  <div class="exp-grid">
 
-<section class="section" id="BibTeX">
-  <div class="container is-max-desktop content">
-    <h2 class="title">BibTeX</h2>
-    <pre><code>@inproceedings{bowconnect2024,
+    <!-- TODO: Replace src with your Fig 2a and 2b paths -->
+    <div class="exp-card">
+      <img src="./static/images/fig2a_ugv.png" alt="UGV experiment configuration A">
+      <div class="exp-info"><span class="exp-tag exp-tag-ugv">Ground Vehicle</span><h3>UGV &mdash; Configuration A</h3><p>Create 3 robot in 6.5m &times; 5.5m workspace. Left: RViz trajectory. Right: real-world execution. No collisions.</p></div>
+    </div>
+    <div class="exp-card">
+      <img src="./static/images/fig2b_ugv.png" alt="UGV experiment configuration B">
+      <div class="exp-info"><span class="exp-tag exp-tag-ugv">Ground Vehicle</span><h3>UGV &mdash; Configuration B</h3><p>Second start&ndash;goal configuration. Average planning time 0.12s, max 0.15s across all runs.</p></div>
+    </div>
+
+    <!-- TODO: Replace src with your Fig 3a and 3b paths -->
+    <div class="exp-card">
+      <img src="./static/images/fig3a_uav.png" alt="UAV experiment configuration A">
+      <div class="exp-info"><span class="exp-tag exp-tag-uav">Aerial Vehicle</span><h3>Quadrotor &mdash; Configuration A</h3><p>Parrot Bebop 2, 8D state, 6.5m &times; 5.5m &times; 2.5m workspace. Close sim-to-real alignment.</p></div>
+    </div>
+    <div class="exp-card">
+      <img src="./static/images/fig3b_uav.png" alt="UAV experiment configuration B">
+      <div class="exp-info"><span class="exp-tag exp-tag-uav">Aerial Vehicle</span><h3>Quadrotor &mdash; Configuration B</h3><p>Collision-free trajectories under 0.1s. Real-time high-dimensional planning confirmed.</p></div>
+    </div>
+
+  </div>
+</div></section><div class="divider"></div>
+
+<!-- BIBTEX -->
+<section id="bibtex"><div class="inner fade-in">
+  <div class="sec-label">Citation</div><h2 class="sec-title">BibTeX</h2>
+  <div class="bib-block"><div class="bib-head"><span>bowconnect2025.bib</span><button class="copy-btn" onclick="copyBib()"><i class="fas fa-copy"></i> Copy</button></div><div class="bib-code" id="bib-code">@inproceedings{bowconnect2025,
   author    = {Author Names},
-  title     = {BOW-CONNECT: Bag-of-Words based Connectivity for Efficient Robotic Exploration and Mapping},
-  booktitle = {IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
-  year      = {2024},
-}</code></pre>
-  </div>
-</section>
+  title     = {BOWConnect: Parallel Bayesian Optimization over 
+               Windows with Learned Local Cost Maps for 
+               Sample-Efficient Kinodynamic Motion Planning},
+  booktitle = {IEEE/RSJ International Conference on 
+               Intelligent Robots and Systems (IROS)},
+  year      = {2025},
+}</div></div>
+</div></section>
 
+<footer><p><b style="color:var(--text)">BOWConnect</b> &middot; IROS 2025<br>Template inspired by <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>. Licensed under <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</p></footer>
 
-<footer class="footer">
-  <div class="container">
-    <div class="content has-text-centered">
-      <a class="icon-link"
-         href="./static/paper/IROS_BOW_CONNECT (5).pdf">
-        <i class="fas fa-file-pdf"></i>
-      </a>
-      <a class="icon-link" href="#" class="external-link">
-        <i class="fab fa-github"></i>
-      </a>
-    </div>
-    <div class="columns is-centered">
-      <div class="column is-8">
-        <div class="content">
-          <p>
-            This website is licensed under a <a rel="license"
-                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
-            Commons Attribution-ShareAlike 4.0 International License</a>.
-          </p>
-          <p>
-            Website template from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</footer>
+<script>
+function switchTab(t){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));event.target.classList.add('active');document.getElementById('tab-'+t).classList.add('active')}
+function copyBib(){navigator.clipboard.writeText(document.getElementById('bib-code').textContent).then(()=>{const b=document.querySelector('.copy-btn');b.innerHTML='<i class="fas fa-check"></i> Copied!';setTimeout(()=>b.innerHTML='<i class="fas fa-copy"></i> Copy',2000)})}
+const obs=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting)en.target.classList.add('visible')})},{threshold:0.1});document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+</script>
 
+<!--
+=============================================================
+  FILE PATHS TO REPLACE — search for "TODO" above
+=============================================================
+
+  IMAGES (place in ./static/images/):
+    fig1_tree_growth.png   — Fig 1: tree growth plot
+    table1_ugv.png         — Table I: UGV benchmark results
+    table2_uav.png         — Table II: UAV benchmark results
+    fig2a_ugv.png          — Fig 2a: UGV experiment config A
+    fig2b_ugv.png          — Fig 2b: UGV experiment config B
+    fig3a_uav.png          — Fig 3a: UAV experiment config A
+    fig3b_uav.png          — Fig 3b: UAV experiment config B
+    ugv_poster.png         — (optional) video poster for UGV
+    uav_poster.png         — (optional) video poster for UAV
+
+  VIDEOS (place in ./static/videos/):
+    Bowconnect Ugv.mp4     — UGV exploration demo
+    Bowconnect Uav Final W Text.mp4 — UAV exploration demo
+
+=============================================================
+-->
 </body>
 </html>
